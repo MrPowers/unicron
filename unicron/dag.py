@@ -211,3 +211,4 @@ class DAG(object):
 
     def size(self):
         return len(self.graph)
+

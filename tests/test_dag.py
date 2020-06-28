@@ -101,21 +101,33 @@ def test_all_downstreams_pass_graph():
     assert dag.all_downstreams('d', dag2.graph) == []
 
 
-# @with_setup(start_with_graph)
-# def test_predecessors():
-    # assert set(dag.predecessors('a')) == set([])
-    # assert set(dag.predecessors('b')) == set(['a', 'c'])
-    # assert set(dag.predecessors('c')) == set(['a'])
-    # assert set(dag.predecessors('d')) == set(['b'])
+def test_predecessors():
+    dag = DAG()
+    dag.from_dict({'a': ['b', 'c'],
+                   'b': ['d'],
+                   'c': ['b'],
+                   'd': []})
+    assert set(dag.predecessors('a')) == set([])
+    assert set(dag.predecessors('b')) == set(['a', 'c'])
+    assert set(dag.predecessors('c')) == set(['a'])
+    assert set(dag.predecessors('d')) == set(['b'])
 
 
-# @with_setup(start_with_graph)
-# def test_all_leaves():
-    # assert dag.all_leaves() == ['d']
+def test_all_leaves():
+    dag = DAG()
+    dag.from_dict({'a': ['b', 'c'],
+                   'b': ['d'],
+                   'c': ['b'],
+                   'd': []})
+    assert dag.all_leaves() == ['d']
 
 
-# @with_setup(start_with_graph)
-# def test_size():
-    # assert dag.size() == 4
-    # dag.delete_node('a')
-    # assert dag.size() == 3
+def test_size():
+    dag = DAG()
+    dag.from_dict({'a': ['b', 'c'],
+                   'b': ['d'],
+                   'c': ['b'],
+                   'd': []})
+    assert dag.size() == 4
+    dag.delete_node('a')
+    assert dag.size() == 3
