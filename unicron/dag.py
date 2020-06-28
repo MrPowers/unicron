@@ -153,7 +153,7 @@ class DAG(object):
         """ Restore the graph to an empty state. """
         self.graph = OrderedDict()
 
-    def ind_nodes(self, graph=None):
+    def independent_nodes(self, graph=None):
         """ Returns a list of all nodes in the graph with no dependencies. """
         if graph is None:
             graph = self.graph
@@ -166,7 +166,7 @@ class DAG(object):
     def validate(self, graph=None):
         """ Returns (Boolean, message) of whether DAG is valid. """
         graph = graph if graph is not None else self.graph
-        if len(self.ind_nodes(graph)) == 0:
+        if len(self.independent_nodes(graph)) == 0:
             return (False, 'no independent nodes detected')
         try:
             self.topological_sort(graph)

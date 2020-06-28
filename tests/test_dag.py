@@ -37,13 +37,13 @@ def test_reset_graph():
     assert dag.graph == {}
 
 
-def test_ind_nodes():
+def test_independent_nodes():
     dag = DAG()
     dag.from_dict({'a': ['b', 'c'],
                    'b': ['d'],
                    'c': ['b'],
                    'd': []})
-    assert dag.ind_nodes(dag.graph) == ['a']
+    assert dag.independent_nodes(dag.graph) == ['a']
 
 
 def test_topological_sort():
