@@ -84,15 +84,19 @@ def test_topological_sort():
     assert dag.topological_sort() == ['c', 'b', 'a']
 
 
-# def test_successful_validation():
-    # dag = DAG()
-    # assert dag.validate()[0] is True
+def test_successful_validation():
+    dag = DAG()
+    dag.from_dict({'a': [],
+                   'b': ['a'],
+                   'c': ['b']})
+    assert dag.validate()[0] is True
 
 
-# def test_failed_validation():
-    # dag = DAG()
-    # dag.from_dict({'a': ['b'],
-                   # 'b': ['a']})
+def test_failed_validation():
+    dag = DAG()
+    with pytest.raises(DAGValidationError) as e_info:
+        dag.from_dict({'a': ['b'],
+                       'b': ['a']})
 
 
 def test_downstream():
