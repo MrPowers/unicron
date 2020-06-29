@@ -39,11 +39,12 @@ def test_add_edge_people():
     assert dag.graph == {p1: {p2}, p2: set()}
 
 
-# def test_add_edge_custom_transform():
-    # dag = DAG()
-    # dag.add_node(ct_a)
-    # dag.add_node(ct_ab)
-    # dag.add_edge(ct_a, ct_ab)
+def test_add_edge_custom_transform():
+    dag = DAG()
+    dag.add_node(ct_a)
+    dag.add_node(ct_ab)
+    dag.add_edge(ct_a, ct_ab)
+    assert dag.graph == {ct_a: {ct_ab}, ct_ab: set()}
 
 
 def test_from_dict():

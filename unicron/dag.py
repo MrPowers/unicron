@@ -71,14 +71,13 @@ class DAG(object):
             graph = self.graph
         if ind_node not in graph or dep_node not in graph:
             raise KeyError('one or more nodes do not exist in graph')
-        graph[ind_node].add(dep_node)
-        # test_graph = deepcopy(graph)
-        # test_graph[ind_node].add(dep_node)
-        # is_valid, message = self.validate(test_graph)
-        # if is_valid:
-            # graph[ind_node].add(dep_node)
-        # else:
-            # raise DAGValidationError()
+        test_graph = graph.copy()
+        test_graph[ind_node].add(dep_node)
+        is_valid, message = self.validate(test_graph)
+        if is_valid:
+            graph[ind_node].add(dep_node)
+        else:
+            raise DAGValidationError()
 
     def delete_edge(self, ind_node, dep_node, graph=None):
         """ Delete an edge from the graph. """
