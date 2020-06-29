@@ -15,6 +15,17 @@ class DAGValidationError(Exception):
     pass
 
 
+# this function is from this blog post: http://rightfootin.blogspot.com/2006/09/more-on-python-flatten.html
+def iter_flatten(iterable):
+  it = iter(iterable)
+  for e in it:
+    if isinstance(e, (list, tuple)):
+      for f in iter_flatten(e):
+        yield f
+    else:
+      yield e
+
+
 class DAG(object):
     """ Directed acyclic graph implementation. """
 
@@ -60,13 +71,14 @@ class DAG(object):
             graph = self.graph
         if ind_node not in graph or dep_node not in graph:
             raise KeyError('one or more nodes do not exist in graph')
-        test_graph = deepcopy(graph)
-        test_graph[ind_node].add(dep_node)
-        is_valid, message = self.validate(test_graph)
-        if is_valid:
-            graph[ind_node].add(dep_node)
-        else:
-            raise DAGValidationError()
+        graph[ind_node].add(dep_node)
+        # test_graph = deepcopy(graph)
+        # test_graph[ind_node].add(dep_node)
+        # is_valid, message = self.validate(test_graph)
+        # if is_valid:
+            # graph[ind_node].add(dep_node)
+        # else:
+            # raise DAGValidationError()
 
     def delete_edge(self, ind_node, dep_node, graph=None):
         """ Delete an edge from the graph. """
@@ -209,6 +221,22 @@ class DAG(object):
         else:
             raise ValueError('graph is not acyclic')
 
+
     def size(self):
         return len(self.graph)
+
+
+    def shortest_path(self, start, end, graph=None):
+        if graph is None:
+            graph = self.graph
+        dist = {start: [start]}
+        q = deque([start])
+        while len(q):
+            at = q.popleft()
+            for next in graph[at]:
+                if next not in dist:
+                    dist[next] = [dist[at], next]
+                    q.append(next)
+        a = dist.get(end)
+        return [i for i in iter_flatten(a)]
 
