@@ -4,6 +4,16 @@ PySpark custom transformation runner that manages function order dependencies wi
 
 See [this video](https://www.youtube.com/watch?v=hzNsOGt3bHk) for more info about Unicron, a "[god of chaos who devours realities](https://en.wikipedia.org/wiki/Unicron)".
 
+## Problem unicron solves
+
+Many organizations have a library of transformations that need to be run in a specific order to get the desired result.
+
+Figuring out how to run 30 functions in the right order to append the column you need for your analysis is a painful workflow.
+
+unicron lets you specify the column you want appended and will do the hard work of figuring out what transformations need to be run and in what order.
+
+unicron does this by modeling your transformations in a directed acyclic graph data structure.  unicron layers a DAG model on top of the DAG model that Spark uses under the hood when executing code.  DAGs on DAGs!
+
 ## Public interface
 
 Suppose you have three transformations that append columns to a DataFrame:
