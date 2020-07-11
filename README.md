@@ -42,8 +42,13 @@ unicron.list_cols(dag) # [col_a, col_ab, col_abc]
 unicron.validate_dag(dag) # throws an error if the DAG isn't structured logically
 ```
 
+## Example
+
+The following directed graph of custom transformations will be used to demonstrate the functionality of this library.
+
+![graph_example](https://github.com/MrPowers/unicron/blob/master/images/simple_directed_graph.png)
+
 ## todo
 
 * add the PySpark dependency
-* create GitHub repo
 

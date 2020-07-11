@@ -175,6 +175,15 @@ def test_shortest_path():
                    'd': []})
     assert dag.shortest_path('a', 'd') == ['a', 'b', 'd']
 
+    dag2 = DAG()
+    dag2.from_dict({'root': ['a'],
+                   'a': ['b'],
+                   'b': ['c', 'd'],
+                   'd': ['e'],
+                   'e': []})
+    assert dag2.shortest_path('root', 'e') == ['root', 'a', 'e']
+    assert dag2.shortest_path('root', 'c') == ['root', 'a', 'b', 'c']
+
 
 def test_shortest_path_with_custom_transforms():
     dag = DAG()
