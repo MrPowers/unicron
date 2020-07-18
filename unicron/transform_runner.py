@@ -1,11 +1,8 @@
-def transform_from_root(df, dag, end):
-    start = dag.topological_sort()[0]
-    transforms = dag.shortest_path(start, end)
-    return run_custom_transforms(df, transforms)
+import networkx as nx
 
 
-def transform_shorted_path(df, dag, start, end):
-    transforms = dag.shortest_path(start, end)
+def transform_shortest_path(df, graph, start, end):
+    transforms = nx.shortest_path(graph, start, end)
     return run_custom_transforms(df, transforms)
 
 

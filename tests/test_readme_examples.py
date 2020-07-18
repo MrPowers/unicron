@@ -7,6 +7,8 @@ import chispa
 from pyspark.sql import SparkSession
 from unicron.custom_transform import CustomTransform
 
+import networkx as nx
+
 
 spark = SparkSession.builder \
   .master("local") \
@@ -83,42 +85,33 @@ def with_e():
     return _
 
 
-# e = CustomTransform(with_e, cols_added = ["e"])
-
-# dag = unicron.DAG()
-# dag.from_dict({root: [a],
-               # a: [b, e],
-               # b: [c, d],
-               # d: [e],
-               # e: []})
+e = CustomTransform(with_e, cols_added = ["e"])
 
 
-# def test_root_to_b():
-    # data = [("jose",), ("li",), ("luisa",)]
-    # df = spark.createDataFrame(data, ["name"])
-    # actual_df = unicron.transform_shorted_path(df, dag, root, b)
-    # actual_df.show()
-    # expected_data = [
-        # ("jose", "jose", "a", "aba", "abcaba"),
-        # ("li", "li", "a", "aba", "abcaba"),
-        # ("luisa", "laura", "a", "aba", "abcaba")]
-    # expected_df = spark.createDataFrame(expected_data, ["name", "expected_name", "col_a", "col_ab", "col_abc"])
-    # chispa.assert_df_equality(actual_df, expected_df, ignore_nullable = True)
+graph = nx.DiGraph()
+graph.add_edges_from([(root, a), (a, b), (a, e), (b, c), (b, d), (d, e)])
 
 
+def test_root_to_b():
+    data = [("jose",), ("li",), ("luisa",)]
+    df = spark.createDataFrame(data, ["name"])
+    actual_df = unicron.transform_shortest_path(df, graph, root, b)
+    expected_data = [
+        ("jose", "aaa", "bbb"),
+        ("li", "aaa", "bbb"),
+        ("luisa", "aaa", "bbb")]
+    expected_df = spark.createDataFrame(expected_data, ["name", "a", "b"])
+    chispa.assert_df_equality(actual_df, expected_df, ignore_nullable = True)
 
-# def test_root_to_e():
-    # data = [("jose", "jose"), ("li", "li"), ("luisa", "laura")]
-    # df = spark.createDataFrame(data, ["name", "expected_name"])
-    # dag = unicron.DAG()
-    # dag.from_dict({ct_a: [ct_ab],
-                   # ct_ab: [ct_abc],
-                   # ct_abc: []})
-    # actual_df = unicron.transform_from_root(df, dag, ct_abc)
-    # expected_data = [
-        # ("jose", "jose", "a", "aba", "abcaba"),
-        # ("li", "li", "a", "aba", "abcaba"),
-        # ("luisa", "laura", "a", "aba", "abcaba")]
-    # expected_df = spark.createDataFrame(expected_data, ["name", "expected_name", "col_a", "col_ab", "col_abc"])
-    # chispa.assert_df_equality(actual_df, expected_df, ignore_nullable = True)
+
+def test_root_to_e():
+    data = [("jose",), ("li",), ("luisa",)]
+    df = spark.createDataFrame(data, ["name",])
+    actual_df = unicron.transform_shortest_path(df, graph, root, e)
+    expected_data = [
+        ("jose", "aaa", "eee"),
+        ("li", "aaa", "eee"),
+        ("luisa", "aaa", "eee")]
+    expected_df = spark.createDataFrame(expected_data, ["name", "a", "e"])
+    chispa.assert_df_equality(actual_df, expected_df, ignore_nullable = True)
 
