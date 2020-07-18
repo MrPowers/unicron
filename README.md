@@ -10,11 +10,17 @@ This library is a diety of PySpark that helps you run your transformations in th
 
 Many organizations have a library of transformations that need to be run in a specific order to get the desired result.
 
-Figuring out how to run 30 functions in the right order to append the column you need for your analysis can be painful.
+Figuring out how to run 30 functions in the right order to append the column you need for your analysis is painful.
 
 unicron lets you specify the column you want appended and will do the hard work of figuring out what transformations need to be run and in what order.
 
 unicron does this by modeling your transformations in a directed acyclic graph data structure.  unicron layers a DAG model on top of the DAG model that Spark uses under the hood when executing code.  DAGs on DAGs!
+
+## Example
+
+The following directed graph of custom transformations will be used to demonstrate the functionality of this library.
+
+![graph_example](https://github.com/MrPowers/unicron/blob/master/images/directed_graph.png)
 
 ## Public interface
 
@@ -43,12 +49,6 @@ unicron.list_cols(dag) # [col_a, col_ab, col_abc]
 # unicron can validate that a custom transformation DAG is valid
 unicron.validate_dag(dag) # throws an error if the DAG isn't structured logically
 ```
-
-## Example
-
-The following directed graph of custom transformations will be used to demonstrate the functionality of this library.
-
-![graph_example](https://github.com/MrPowers/unicron/blob/master/images/directed_graph.png)
 
 ## todo
 

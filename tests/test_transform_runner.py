@@ -31,6 +31,16 @@ def test_transform_shortest_path():
     chispa.assert_df_equality(actual_df, expected_df, ignore_nullable = True)
 
 
+def test_simulate_shortest_path():
+    data = [("jose", "jose"), ("li", "li"), ("luisa", "laura")]
+    df = spark.createDataFrame(data, ["name", "expected_name"])
+    graph = nx.DiGraph()
+    graph.add_edges_from([(ct_a, ct_ab), (ct_ab, ct_abc)])
+    actual = unicron.simulate_shortest_path(df, graph, ct_a, ct_abc)
+    expected = {"cols_added": ["col_abc", "col_ab", "col_a"], "cols_removed": []}
+    assert actual == expected
+
+
 def test_run_custom_transforms():
     data = [("jose", "jose"), ("li", "li"), ("luisa", "laura")]
     df = spark.createDataFrame(data, ["name", "expected_name"])
