@@ -83,21 +83,21 @@ def with_e():
     return _
 
 
-e = CustomTransform(with_e, cols_added = ["e"])
+# e = CustomTransform(with_e, cols_added = ["e"])
 
-dag = unicron.DAG()
-dag.from_dict({root: [a],
-               a: [b, e],
-               b: [c, d],
-               d: [e],
-               e: []})
+# dag = unicron.DAG()
+# dag.from_dict({root: [a],
+               # a: [b, e],
+               # b: [c, d],
+               # d: [e],
+               # e: []})
 
 
-def test_root_to_b():
-    data = [("jose",), ("li",), ("luisa",)]
-    df = spark.createDataFrame(data, ["name"])
-    actual_df = unicron.transform_shorted_path(df, dag, root, b)
-    actual_df.show()
+# def test_root_to_b():
+    # data = [("jose",), ("li",), ("luisa",)]
+    # df = spark.createDataFrame(data, ["name"])
+    # actual_df = unicron.transform_shorted_path(df, dag, root, b)
+    # actual_df.show()
     # expected_data = [
         # ("jose", "jose", "a", "aba", "abcaba"),
         # ("li", "li", "a", "aba", "abcaba"),
