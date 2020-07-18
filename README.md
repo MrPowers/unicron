@@ -4,11 +4,13 @@ PySpark custom transformation runner that manages function order dependencies wi
 
 See [this video](https://www.youtube.com/watch?v=hzNsOGt3bHk) for more info about Unicron, a "[god of chaos who devours realities](https://en.wikipedia.org/wiki/Unicron)".
 
+This library is a diety of PySpark that helps you run your transformations in the right order.
+
 ## Problem unicron solves
 
 Many organizations have a library of transformations that need to be run in a specific order to get the desired result.
 
-Figuring out how to run 30 functions in the right order to append the column you need for your analysis is a painful workflow.
+Figuring out how to run 30 functions in the right order to append the column you need for your analysis can be painful.
 
 unicron lets you specify the column you want appended and will do the hard work of figuring out what transformations need to be run and in what order.
 
@@ -46,7 +48,7 @@ unicron.validate_dag(dag) # throws an error if the DAG isn't structured logicall
 
 The following directed graph of custom transformations will be used to demonstrate the functionality of this library.
 
-![graph_example](https://github.com/MrPowers/unicron/blob/master/images/simple_directed_graph.png)
+![graph_example](https://github.com/MrPowers/unicron/blob/master/images/directed_graph.png)
 
 ## todo
 
