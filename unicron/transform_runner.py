@@ -29,3 +29,12 @@ def run_custom_transforms(df, transforms):
     for ct in transforms:
         res = res.transform(ct.transform())
     return res
+
+
+def add_column(df, graph, col_name):
+    transforms = list(nx.topological_sort(graph))
+    root = transforms[0]
+    end = next(ct for ct in transforms if col_name in ct.cols_added)
+    t = transforms_to_run(df, graph, root, end)
+    return run_custom_transforms(df, t)
+

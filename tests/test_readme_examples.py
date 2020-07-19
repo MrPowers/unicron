@@ -33,8 +33,6 @@ root = CustomTransform(with_root)
 
 def with_a():
     def _(df):
-        # if "root" not in df.columns:
-            # raise ColumnsDoesNotExistError("no root column")
         return df.withColumn("a", F.lit("aaa"))
     return _
 
@@ -51,7 +49,7 @@ def with_b():
     return _
 
 
-b = CustomTransform(with_b, cols_added = ["b"])
+b = CustomTransform(with_b, cols_added = ["b"], required_cols = ["a"])
 
 
 
@@ -63,7 +61,7 @@ def with_c():
     return _
 
 
-c = CustomTransform(with_c, cols_added = ["c"])
+c = CustomTransform(with_c, cols_added = ["c"], required_cols = ["b"])
 
 
 def with_d():
@@ -74,7 +72,7 @@ def with_d():
     return _
 
 
-d = CustomTransform(with_c, cols_added = ["d"])
+d = CustomTransform(with_d, cols_added = ["d"], required_cols = ["b"])
 
 
 def with_e():
@@ -85,7 +83,7 @@ def with_e():
     return _
 
 
-e = CustomTransform(with_e, cols_added = ["e"])
+e = CustomTransform(with_e, cols_added = ["e"], required_cols = ["a"])
 
 
 graph = nx.DiGraph()
@@ -110,11 +108,35 @@ def test_root_to_e():
     df = spark.createDataFrame(data, ["name",])
     transforms = unicron.transforms_to_run(df, graph, root, e)
     actual_df = unicron.run_custom_transforms(df, transforms)
-    # actual_df = unicron.transform_shortest_path(df, graph, root, e)
     expected_data = [
         ("jose", "aaa", "eee"),
         ("li", "aaa", "eee"),
         ("luisa", "aaa", "eee")]
     expected_df = spark.createDataFrame(expected_data, ["name", "a", "e"])
+    chispa.assert_df_equality(actual_df, expected_df, ignore_nullable = True)
+
+
+def test_root_to_d():
+    data = [("jose",), ("li",), ("luisa",)]
+    df = spark.createDataFrame(data, ["name",])
+    transforms = unicron.transforms_to_run(df, graph, root, d)
+    actual_df = unicron.run_custom_transforms(df, transforms)
+    expected_data = [
+        ("jose", "aaa", "bbb", "ddd"),
+        ("li", "aaa", "bbb", "ddd"),
+        ("luisa", "aaa", "bbb", "ddd")]
+    expected_df = spark.createDataFrame(expected_data, ["name", "a", "b", "d"])
+    chispa.assert_df_equality(actual_df, expected_df, ignore_nullable = True)
+
+
+def test_add_column_d():
+    data = [("jose",), ("li",), ("luisa",)]
+    df = spark.createDataFrame(data, ["name",])
+    actual_df = unicron.add_column(df, graph, "d")
+    expected_data = [
+        ("jose", "aaa", "bbb", "ddd"),
+        ("li", "aaa", "bbb", "ddd"),
+        ("luisa", "aaa", "bbb", "ddd")]
+    expected_df = spark.createDataFrame(expected_data, ["name", "a", "b", "d"])
     chispa.assert_df_equality(actual_df, expected_df, ignore_nullable = True)
 

@@ -18,9 +18,111 @@ unicron does this by modeling your transformations in a directed acyclic graph d
 
 ## Example
 
-The following directed graph of custom transformations will be used to demonstrate the functionality of this library.
+Suppose you have the following DataFrame:
+
+```
++-----+
+| name|
++-----+
+| jose|
+|   li|
+|luisa|
++-----+
+```
+
+A non-technical user would like to append column `d` to the DataFrame.  They don't know what transformation appends column `d` or the list of transformations that might need to be run before the "column d transformation" can be run.  Here's the interface to append column `d`:
+
+```python
+actual_df = unicron.add_column(df, graph, "d")
+actual_df.show()
+```
+
+```
++-----+---+---+---+
+| name|  a|  b|  d|
++-----+---+---+---+
+| jose|aaa|bbb|ddd|
+|   li|aaa|bbb|ddd|
+|luisa|aaa|bbb|ddd|
++-----+---+---+---+
+```
+
+unicron appended columns `a` and `b` in order to append column `d`.  The work unicron does under the hood to append columns in the right order is hidden from the non-technical user.
+
+Some users will "quit Spark" when they realize that it's too complicated for them to figure out how to append the column they want for their analysis.  This interface makes Spark more approachable.
+
+The technical users should be responsible for constructing the `graph` and passing it to notebook users.
+
+## Implementation
+
+The following directed graph of custom transformations will be used to demonstrate the functionality of this library ([image generated here](https://csacademy.com/app/graph_editor/)).
 
 ![graph_example](https://github.com/MrPowers/unicron/blob/master/images/directed_graph.png)
+
+Let's review some directed acyclic graph (DAG) basics:
+
+* root, a, b, c, d, and e are vertices
+* the arrows that connect the vertices are called edges
+* the shortest path between vertices root and e is root => a => e.  You could also get from root to e via root => a => b => d => e, but that'd be longer.
+* graphs can be [topologically sorted](https://en.wikipedia.org/wiki/Topological_sorting).  The topological sorting of this graph is root => a => b => d => e => c
+
+unicron models each vertex in the directed graph as a `CustomTransform` object with these four properties:
+
+* transform: [a function with this signature](https://mungingdata.com/pyspark/chaining-dataframe-transformations/)
+* cols_added: columns added by the transform function
+* cols_removed: columns removed by the transform function
+* required_cols: columns the transform function depends on to run successfully
+
+Here's how we can create a `CustomTransform`:
+
+```python
+def with_b():
+    def _(df):
+        if "a" not in df.columns:
+            raise ColumnsDoesNotExistError("no a column")
+        return df.withColumn("b", F.lit("bbb"))
+    return _
+
+
+b = CustomTransform(with_b, cols_added = ["b"], required_cols = ["a"])
+```
+
+`with_b` requires column `a` and appends column `b` to a DataFrame.
+
+The [networkx](https://github.com/networkx/networkx) library makes it easy to construct a directed graph with `CustomTransform` objects as vertices:
+
+```python
+import networkx as nx
+
+graph = nx.DiGraph()
+graph.add_edges_from([(root, a), (a, b), (a, e), (b, c), (b, d), (d, e)])
+```
+
+**Single root**
+
+DAGs can have multiple roots, but it's best for you to create a single root, even it it does nothing, so the topological sort always starts with the same vertex.  Here's an example of a root that doesn't do anything:
+
+```python
+def with_root():
+    def _(df):
+        return df
+    return _
+
+
+root = CustomTransform(with_root)
+```
+
+**DAG validity**
+
+TODO
+
+**CustomTransform Validation**
+
+TODO
+
+**Skipping transformations when columns are present**
+
+TODO
 
 ## Public interface
 
