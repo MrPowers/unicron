@@ -95,7 +95,8 @@ graph.add_edges_from([(root, a), (a, b), (a, e), (b, c), (b, d), (d, e)])
 def test_root_to_b():
     data = [("jose",), ("li",), ("luisa",)]
     df = spark.createDataFrame(data, ["name"])
-    actual_df = unicron.transform_shortest_path(df, graph, root, b)
+    transforms = unicron.transforms_to_run(df, graph, root, b)
+    actual_df = unicron.run_custom_transforms(df, transforms)
     expected_data = [
         ("jose", "aaa", "bbb"),
         ("li", "aaa", "bbb"),
@@ -107,7 +108,9 @@ def test_root_to_b():
 def test_root_to_e():
     data = [("jose",), ("li",), ("luisa",)]
     df = spark.createDataFrame(data, ["name",])
-    actual_df = unicron.transform_shortest_path(df, graph, root, e)
+    transforms = unicron.transforms_to_run(df, graph, root, e)
+    actual_df = unicron.run_custom_transforms(df, transforms)
+    # actual_df = unicron.transform_shortest_path(df, graph, root, e)
     expected_data = [
         ("jose", "aaa", "eee"),
         ("li", "aaa", "eee"),
